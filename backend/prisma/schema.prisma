@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  technician
+  manager
+}
+
+enum RequestType {
+  corrective
+  preventive
+}
+
+enum RequestStatus {
+  new
+  in_progress
+  repaired
+  scrap
+}
+
+enum Priority {
+  low
+  medium
+  high
+  urgent
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         Role     @default(user)
+  avatarUrl    String?  @map("avatar_url")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  teams              TeamMember[]
+  assignedRequests   MaintenanceRequest[] @relation("AssignedTo")
+  createdRequests    MaintenanceRequest[] @relation("CreatedBy")
+  defaultEquipment   Equipment[]          @relation("DefaultTechnician")
+
+  @@map("users")
+}
+
+model MaintenanceTeam {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  members    TeamMember[]
+  equipment  Equipment[]
+  requests   MaintenanceRequest[]
+
+  @@map("maintenance_teams")
+}
+
+model TeamMember {
+  teamId    Int      @map("team_id")
+  userId    Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  team MaintenanceTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, userId])
+  @@map("team_members")
+}
+
+model Equipment {
+  id                   Int      @id @default(autoincrement())
+  name                 String
+  serialNumber         String   @unique @map("serial_number")
+  department           String?
+  ownerEmployee        String?  @map("owner_employee")
+  purchaseDate         DateTime? @map("purchase_date")
+  warrantyExpiry       DateTime? @map("warranty_expiry")
+  location             String?
+  maintenanceTeamId    Int?     @map("maintenance_team_id")
+  defaultTechnicianId  Int?     @map("default_technician_id")
+  isScrapped           Boolean  @default(false) @map("is_scrapped")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  maintenanceTeam   MaintenanceTeam?     @relation(fields: [maintenanceTeamId], references: [id], onDelete: SetNull)
+  defaultTechnician User?                @relation("DefaultTechnician", fields: [defaultTechnicianId], references: [id], onDelete: SetNull)
+  requests          MaintenanceRequest[]
+
+  @@map("equipment")
+}
+
+model MaintenanceRequest {
+  id            Int           @id @default(autoincrement())
+  subject       String
+  type          RequestType
+  description   String?
+  priority      Priority      @default(medium)
+  equipmentId   Int?          @map("equipment_id")
+  teamId        Int?          @map("team_id")
+  assignedToId  Int?          @map("assigned_to")
+  createdById   Int?          @map("created_by")
+  status        RequestStatus @default(new)
+  scheduledDate DateTime?     @map("scheduled_date")
+  durationHours Float?        @map("duration_hours")
+  completedAt   DateTime?     @map("completed_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  equipment  Equipment?       @relation(fields: [equipmentId], references: [id], onDelete: SetNull)
+  team       MaintenanceTeam? @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  assignedTo User?            @relation("AssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+  createdBy  User?            @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([type])
+  @@index([equipmentId])
+  @@index([teamId])
+  @@index([scheduledDate])
+  @@map("maintenance_requests")
+}
