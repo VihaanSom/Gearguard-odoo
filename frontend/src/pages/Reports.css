@@ -1,0 +1,26 @@
+.reports-page {
+    animation: fadeIn var(--transition-normal) ease-out;
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-xl);
+    padding: var(--space-6);
+    text-align: center;
+}
+
+.stat-value {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    margin-bottom: var(--space-2);
+}
+
+.stat-label {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+}
+
+.text-info {
+    color: var(--color-info);
+}

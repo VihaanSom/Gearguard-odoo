@@ -1,0 +1,74 @@
+.calendar-page {
+    animation: fadeIn var(--transition-normal) ease-out;
+}
+
+.calendar-legend {
+    display: flex;
+    gap: var(--space-6);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.legend-dot.preventive {
+    background: #10b981;
+}
+
+.legend-dot.corrective {
+    background: #f59e0b;
+}
+
+.calendar-container {
+    padding: var(--space-6);
+}
+
+.fc {
+    --fc-border-color: var(--border-color);
+    --fc-button-bg-color: var(--bg-tertiary);
+    --fc-button-border-color: var(--border-color);
+    --fc-button-text-color: var(--text-primary);
+    --fc-button-hover-bg-color: var(--color-primary);
+    --fc-today-bg-color: rgba(99, 102, 241, 0.1);
+}
+
+.fc .fc-toolbar-title {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.fc .fc-button {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    border-radius: var(--border-radius-lg);
+}
+
+.fc .fc-daygrid-day-number {
+    color: var(--text-secondary);
+    padding: var(--space-2);
+}
+
+.fc .fc-col-header-cell-cushion {
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+}
+
+.fc .fc-event {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--text-xs);
+    cursor: pointer;
+}
